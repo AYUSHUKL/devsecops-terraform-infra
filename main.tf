@@ -108,14 +108,35 @@ resource "aws_security_group" "cicd" {
   tags = { Name = "${var.name}-sg" }
 }
 
-# --- AMI: Ubuntu 22.04 LTS ---
-data "aws_ssm_parameter" "ubuntu_2204_ami" {
-  name = "/aws/service/canonical/ubuntu/server/22.04/stable/current/amd64/hvm/ebs-gp3/ami-id"
+# Optionally allow a manual override via TF_VAR_ami_id
+variable "ami_id" {
+  description = "Override Ubuntu AMI ID (optional). If null, discover latest Canonical Ubuntu 22.04 automatically."
+  type        = string
+  default     = null
+}
+
+# Discover latest Canonical Ubuntu 22.04 (Jammy) AMI in the current region
+data "aws_ami" "ubuntu_2204" {
+  most_recent = true
+  owners      = ["099720109477"] # Canonical
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
 }
 
 # --- EC2 with extra data volume and your install script ---
 resource "aws_instance" "jenkins" {
-  ami                         = data.aws_ssm_parameter.ubuntu_2204_ami.value
+  ami                         = var.ami_id != null ? var.ami_id : data.aws_ami.ubuntu_2204.id
   instance_type               = var.instance_type
   subnet_id                   = aws_subnet.public.id
   vpc_security_group_ids      = [aws_security_group.cicd.id]
