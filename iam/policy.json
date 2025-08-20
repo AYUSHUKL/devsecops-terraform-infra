@@ -1,0 +1,23 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "TerraformBasic",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:*",
+        "iam:PassRole",
+        "elasticloadbalancing:*",
+        "autoscaling:*",
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+        "ssm:GetParameterHistory",
+        "logs:*",
+        "cloudwatch:*",
+        "s3:*",
+        "dynamodb:*"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

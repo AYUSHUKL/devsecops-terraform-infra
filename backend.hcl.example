@@ -1,0 +1,6 @@
+# Copy to backend.hcl and fill in your values
+bucket         = "REPLACE_WITH_YOUR_S3_BUCKET_NAME"
+key            = "terraform/devsecops-cicd/terraform.tfstate"
+region         = "us-east-1"
+dynamodb_table = "REPLACE_WITH_YOUR_DDB_TABLE"
+encrypt        = true
