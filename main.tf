@@ -19,19 +19,19 @@ resource "aws_vpc" "this" {
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
-  tags = { Name = "${var.name}-vpc" }
+  tags                 = { Name = "${var.name}-vpc" }
 }
 
 resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
-  tags = { Name = "${var.name}-igw" }
+  tags   = { Name = "${var.name}-igw" }
 }
 
 resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.this.id
   cidr_block              = var.subnet_cidr
   map_public_ip_on_launch = true
-  tags = { Name = "${var.name}-subnet-public" }
+  tags                    = { Name = "${var.name}-subnet-public" }
 }
 
 resource "aws_route_table" "public" {
@@ -123,15 +123,15 @@ resource "aws_instance" "jenkins" {
   associate_public_ip_address = true
 
   root_block_device {
-    volume_size = var.root_volume_size
-    volume_type = "gp3"
+    volume_size           = var.root_volume_size
+    volume_type           = "gp3"
     delete_on_termination = true
   }
 
   ebs_block_device {
-    device_name = "/dev/sdf"
-    volume_size = var.data_volume_size
-    volume_type = "gp3"
+    device_name           = "/dev/sdf"
+    volume_size           = var.data_volume_size
+    volume_type           = "gp3"
     delete_on_termination = true
   }
 
@@ -151,9 +151,9 @@ SCRIPT
 resource "aws_eip" "jenkins_eip" {
   domain   = "vpc"
   instance = aws_instance.jenkins.id
-  tags = { Name = "${var.name}-eip" }
+  tags     = { Name = "${var.name}-eip" }
 }
 
-output "public_ip"   { value = aws_eip.jenkins_eip.public_ip }
+output "public_ip" { value = aws_eip.jenkins_eip.public_ip }
 output "jenkins_url" { value = "http://${aws_eip.jenkins_eip.public_ip}:8080" }
 output "ssh_command" { value = "ssh -i <PATH_TO_PEM> ubuntu@${aws_eip.jenkins_eip.public_ip}" }
